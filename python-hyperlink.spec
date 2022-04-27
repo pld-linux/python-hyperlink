@@ -8,13 +8,13 @@
 Summary:	A featureful, immutable, and correct URL for Python 2
 Summary(pl.UTF-8):	Funkcjonalne, niezmienne i poprawne URL-e dla Pythona 2
 Name:		python-hyperlink
-Version:	19.0.0
-Release:	5
+Version:	21.0.0
+Release:	1
 License:	MIT
 Group:		Libraries/Python
 #Source0Download: https://pypi.org/simple/hyperlink/
 Source0:	https://files.pythonhosted.org/packages/source/h/hyperlink/hyperlink-%{version}.tar.gz
-# Source0-md5:	4772fb4d87c26a1ab22a6161424e3cba
+# Source0-md5:	6285ac13e7d6be4157698ad7960ed490
 URL:		https://pypi.org/project/hyperlink/
 %if %{with python2}
 BuildRequires:	python-modules >= 1:2.6
@@ -22,10 +22,11 @@ BuildRequires:	python-setuptools
 %if %{with tests}
 BuildRequires:	python-idna >= 2.5
 BuildRequires:	python-pytest >= 2.9.2
+BuildRequires:	python-typing
 %endif
 %endif
 %if %{with python3}
-BuildRequires:	python3-modules >= 1:3.4
+BuildRequires:	python3-modules >= 1:3.5
 BuildRequires:	python3-setuptools
 %if %{with tests}
 BuildRequires:	python3-idna >= 2.5
@@ -55,7 +56,7 @@ Jest oparta na RFC 3986 i 3987, pozwala na łatwą pracę z URI oraz IRI.
 Summary:	A featureful, immutable, and correct URL for Python 3
 Summary(pl.UTF-8):	Funkcjonalne, niezmienne i poprawne URL-e dla Pythona 3
 Group:		Libraries/Python
-Requires:	python3-modules >= 1:3.4
+Requires:	python3-modules >= 1:3.5
 
 %description -n python3-hyperlink
 Hyperlink provides a pure-Python implementation of immutable URLs.
@@ -83,19 +84,20 @@ Dokumentacja API modułu Pythona hyperlink.
 %build
 %if %{with python2}
 %py_build
-# deprecated target, but sometimes still used: %{?with_tests:test}
 
 %if %{with tests}
-%{__python} -m pytest hyperlink/test
+# test_hostnames_ascii_nolead fails due to hypothesis timing rules
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+%{__python} -m pytest src/hyperlink/test -k 'not test_hostnames_ascii_nolead'
 %endif
 %endif
 
 %if %{with python3}
 %py3_build
-# deprecated target, but sometimes still used: %{?with_tests:test}
 
 %if %{with tests}
-%{__python3} -m pytest hyperlink/test
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+%{__python3} -m pytest src/hyperlink/test -k 'not test_hostnames_ascii_nolead'
 %endif
 %endif
 
@@ -110,11 +112,14 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with python2}
 %py_install
 
+%{__rm} -r $RPM_BUILD_ROOT%{py_sitescriptdir}/hyperlink/test
 %py_postclean
 %endif
 
 %if %{with python3}
 %py3_install
+
+%{__rm} -r $RPM_BUILD_ROOT%{py3_sitescriptdir}/hyperlink/test
 %endif
 
 %clean
@@ -139,5 +144,5 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with doc}
 %files apidocs
 %defattr(644,root,root,755)
-%doc docs/_build/html/{_modules,_static,*.html,*.js}
+%doc docs/_build/html/{_static,*.html,*.js}
 %endif
