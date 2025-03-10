@@ -9,7 +9,7 @@ Summary:	A featureful, immutable, and correct URL for Python 2
 Summary(pl.UTF-8):	Funkcjonalne, niezmienne i poprawne URL-e dla Pythona 2
 Name:		python-hyperlink
 Version:	21.0.0
-Release:	1
+Release:	2
 License:	MIT
 Group:		Libraries/Python
 #Source0Download: https://pypi.org/simple/hyperlink/
